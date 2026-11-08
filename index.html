@@ -47,7 +47,8 @@ body{box-sizing:border-box;padding:env(safe-area-inset-top) env(safe-area-inset-
   });
   frame.addEventListener('load',function(){setTimeout(show,4000);});
   setTimeout(show,15000);
-  frame.src='https://script.google.com/macros/s/'+id+'/exec?t='+encodeURIComponent(token);
+  // shell=1：家長頁知道自己在入口頁裡，不顯示「放到主畫面」提示條（第二十六輪）。
+  frame.src='https://script.google.com/macros/s/'+id+'/exec?t='+encodeURIComponent(token)+'&shell=1';
 })();
 </script>
 </body>
