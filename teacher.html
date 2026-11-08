@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>薪事</title>
 <!-- 薪事老師端的「入口頁」（第二十五輪）：從手機主畫面的吉祥物打開，馬上轉到老師端。
-     老師端要登入 Google，不能包在別的網頁裡，所以這頁只負責轉過去。網址只存在 # 後面，不會送到放這頁的伺服器。 -->
+     老師端要登入 Google，不能包在別的網頁裡，所以這頁只負責轉過去。網址只存在 # 後面，不會送到放這頁的伺服器。
+     第二十六輪 #189：只有「從主畫面全螢幕打開」才自動轉。在 Safari 裡一律停在這頁，
+     否則 iPhone 加入主畫面時讀到的是轉過去的 Google 頁面，圖示就變成灰底「薪」。 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="薪事">
 <meta name="theme-color" content="#f2f2ef">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex, nofollow">
@@ -44,7 +50,7 @@ ol{margin:0;padding-left:22px}
   <div id="steps" class="card" hidden>
     <ol>
       <li>按 Safari 下方的「分享」，選「加入主畫面」。</li>
-      <li>之後從主畫面的吉祥物打開，就會直接進到老師端。</li>
+      <li>之後從主畫面的吉祥物打開，就會直接進到老師端（第一次可能要登入 Google）。</li>
     </ol>
     <a id="go" class="btn secondary" href="#">現在打開老師端</a>
   </div>
@@ -52,18 +58,17 @@ ol{margin:0;padding-left:22px}
 <script>
 (function(){
   var OK=/^https:\/\/script\.google\.com\/(?:a\/[^\/\s?#]+\/)?macros\/s\/[A-Za-z0-9_-]+\/(?:exec|dev)$/;
-  var q=new URLSearchParams(location.hash.slice(1)),u=q.get('u')||'',setupMode=q.has('setup'),seen=false;
-  try{seen=sessionStorage.getItem('xinshi-teacher-setup')==='1';}catch(_){}
-  // 從主畫面打開（# 後面有網址、不是剛設定完）：直接轉到老師端。
-  if(OK.test(u)&&!setupMode&&!seen){document.getElementById('hop').hidden=false;location.replace(u);return;}
+  var q=new URLSearchParams(location.hash.slice(1)),u=q.get('u')||'';
+  var home=window.navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  // 從主畫面全螢幕打開（# 後面有網址）：直接轉到老師端。
+  if(OK.test(u)&&home){document.getElementById('hop').hidden=false;location.replace(u);return;}
   var setup=document.getElementById('setup'),input=document.getElementById('url'),err=document.getElementById('err'),steps=document.getElementById('steps'),go=document.getElementById('go');
   setup.hidden=false;if(OK.test(u))input.value=u;
   function ready(url){
-    try{sessionStorage.setItem('xinshi-teacher-setup','1');}catch(_){}
     history.replaceState(null,'',location.pathname+'#u='+encodeURIComponent(url));
     go.href=url;steps.hidden=false;err.hidden=true;
   }
-  if(OK.test(u)&&!setupMode)ready(u);
+  if(OK.test(u))ready(u);
   document.getElementById('make').onclick=function(){
     var url=input.value.trim().replace(/[?#].*$/,'');
     if(!OK.test(url)){err.textContent='網址格式不對，要是 https://script.google.com/…/dev 或 …/exec。';err.hidden=false;steps.hidden=true;return;}
