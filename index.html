@@ -48,7 +48,9 @@ body{box-sizing:border-box;padding:env(safe-area-inset-top) env(safe-area-inset-
   frame.addEventListener('load',function(){setTimeout(show,4000);});
   setTimeout(show,15000);
   // shell=1：家長頁知道自己在入口頁裡，不顯示「放到主畫面」提示條（第二十六輪）。
-  frame.src='https://script.google.com/macros/s/'+id+'/exec?t='+encodeURIComponent(token)+'&shell=1';
+  // m=收費月份（第三十五輪）：只接受「年-月」，原樣轉給家長頁。
+  var m=q.get('m')||'';
+  frame.src='https://script.google.com/macros/s/'+id+'/exec?t='+encodeURIComponent(token)+'&shell=1'+(/^\d{4}-(0[1-9]|1[0-2])$/.test(m)?'&m='+m:'');
 })();
 </script>
 </body>
